@@ -1,0 +1,6 @@
+node_modules/
+.env
+uploads/
+apimvc.sqlite
+*.log
+.DS_Store

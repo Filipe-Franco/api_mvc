@@ -1,0 +1,88 @@
+<%- include('../partials/header', { user: user }) %>
+
+<h2>Lista de Produtos</h2>
+
+<!-- Barra de busca -->
+<form method="GET" action="/products" class="row g-3 mb-4">
+    <div class="col-auto">
+        <input type="text" name="search" class="form-control" placeholder="Buscar por nome..." value="<%= search %>">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+        <% if (search) { %>
+            <a href="/products" class="btn btn-secondary">Limpar</a>
+        <% } %>
+    </div>
+    <div class="col-auto ms-auto">
+        <a href="/products/new" class="btn btn-success">Novo Produto</a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Imagem</th>
+            <th>Nome</th>
+            <th>Preço (R$)</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if (products.length === 0) { %>
+            <tr><td colspan="6" class="text-center">Nenhum produto cadastrado.</td></tr>
+        <% } else { %>
+            <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td>
+                        <% if (product.imageUrl) { %>
+                            <img src="<%= product.imageUrl %>" class="product-img" alt="Imagem">
+                        <% } else { %>
+                            <span class="text-muted">Sem imagem</span>
+                        <% } %>
+                    </td>
+                    <td><%= product.name %></td>
+                    <td>R$ <%= parseFloat(product.price).toFixed(2) %></td>
+                    <td><%= product.description || '-' %></td>
+                    <td>
+                        <a href="/products/<%= product.id %>/edit" class="btn btn-sm btn-warning">Editar</a>
+                        <form action="/products/<%= product.id %>?_method=DELETE" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        <% } %>
+    </tbody>
+</table>
+
+<!-- Paginação -->
+<nav>
+    <ul class="pagination justify-content-center">
+        <% if (currentPage > 1) { %>
+            <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage-1 %><%= search ? '&search='+search : '' %>">Anterior</a>
+            </li>
+        <% } else { %>
+            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %><%= search ? '&search='+search : '' %>"><%= i %></a>
+            </li>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+            <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage+1 %><%= search ? '&search='+search : '' %>">Próxima</a>
+            </li>
+        <% } else { %>
+            <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+        <% } %>
+    </ul>
+</nav>
+
+<%- include('../partials/footer') %>
